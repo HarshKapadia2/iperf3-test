@@ -1,0 +1,49 @@
+#! /bin/bash
+
+set -Eeuo pipefail;
+
+interface_name="";
+
+# Handle command-line arguments
+if [[ "$#" -gt 0 ]]; then
+	while [[ "$#" -gt 0 ]]; do
+		case "$1" in
+			"--interface-name")
+				interface_name=$2;
+				shift;
+				shift;
+				;;
+			*)
+				echo "";
+				echo "Error: invalid argument $1.";
+				exit 1;
+				echo "";
+				shift;
+				;;
+		esac;
+	done;
+fi;
+
+if [[ "${interface_name}" == "" ]]; then
+	echo "Please enter interface name";
+	exit 1;
+fi;
+
+sudo ethtool -K ${interface_name} lro on # (Default=OFF) (Genesis_PPOG=ON)
+sudo ethtool -K ${interface_name} hw-tc-offload on # (Default=OFF) (Genesis_PPOG=ON)
+sudo ethtool -K ${interface_name} ntuple on # (Default=OFF) (Genesis_PPOG=ON)
+sudo ethtool -K ${interface_name} tx-nocache-copy on # (Default=OFF) (Genesis_PPOG=ON)
+sudo ethtool -G ${interface_name} rx 8192 tx 8192 # (Default=1024) (Genesis_PPOG=8192)
+sudo ethtool -s ${interface_name} speed 100000 duplex full autoneg off
+sudo ethtool -L ${interface_name} combined 8 # (Default=63) (Genesis_PPOG=8)
+sudo ip link set ${interface_name} mtu 9000  # (Default=1500) (Genesis_PPOG=9000)
+sudo sysctl -w net.core.rmem_max=2147483647 # (Default=208KiB @ 212992) (Genesis_PPOG=2GiB @ 2147483647)
+sudo sysctl -w net.core.wmem_max=2147483647 # (Default=208KiB @ 212992) (Genesis_PPOG=2GiB @ 2147483647)
+sudo sysctl -w net.core.rmem_default=524288 # (Default=208KiB @ 212992) (Genesis_PPOG=512KiB @ 524288)
+sudo sysctl -w net.core.wmem_default=524288 # (Default=208KiB @ 212992) (Genesis_PPOG=512KiB @ 524288)
+sudo sysctl -w net.core.netdev_max_backlog=25000 # (Default=1000) (Genesis_PPOG=25000)
+sudo sysctl -w net.core.busy_poll=50 # (Default=0) (Genesis_PPOG=50)
+sudo sysctl -w net.core.busy_read=50 # (Default=0) (Genesis_PPOG=50)
+sudo sysctl -w net.core.netdev_budget=1200 # (Default=300) (Genesis_PPOG=1200)
+sudo sysctl -w net.core.rps_sock_flow_entries=65536 # (Default=0) (Genesis_PPOG=65536) 
+sudo echo 16128 | sudo tee /sys/class/net/${interface_name}/queues/rx-*/rps_flow_cnt;
