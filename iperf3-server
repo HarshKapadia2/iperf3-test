@@ -1,0 +1,13 @@
+#! /bin/bash
+
+set -Eeuo pipefail;
+
+sudo numactl --physcpubind=0-63 iperf3 -s -1 --port 2501 &;
+sudo numactl --physcpubind=0-63 iperf3 -s -1 --port 2502 &;
+sudo numactl --physcpubind=0-63 iperf3 -s -1 --port 2503 &;
+sudo numactl --physcpubind=0-63 iperf3 -s -1 --port 2504 &;
+sudo numactl --physcpubind=0-63 iperf3 -s -1 --port 2505 &;
+sudo numactl --physcpubind=0-63 iperf3 -s -1 --port 2506 &;
+sudo numactl --physcpubind=0-63 iperf3 -s -1 --port 2507 &;
+sudo numactl --physcpubind=0-63 iperf3 -s -1 --port 2508;
+
