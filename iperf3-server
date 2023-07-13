@@ -2,12 +2,22 @@
 
 set -Eeuo pipefail;
 
-sudo numactl --physcpubind=0-63 iperf3 -s -1 --port 2501 &;
-sudo numactl --physcpubind=0-63 iperf3 -s -1 --port 2502 &;
-sudo numactl --physcpubind=0-63 iperf3 -s -1 --port 2503 &;
-sudo numactl --physcpubind=0-63 iperf3 -s -1 --port 2504 &;
-sudo numactl --physcpubind=0-63 iperf3 -s -1 --port 2505 &;
-sudo numactl --physcpubind=0-63 iperf3 -s -1 --port 2506 &;
-sudo numactl --physcpubind=0-63 iperf3 -s -1 --port 2507 &;
-sudo numactl --physcpubind=0-63 iperf3 -s -1 --port 2508;
+# sudo numactl --physcpubind=0-63 iperf3 -s -1 --port 2501 &;
+# sudo numactl --physcpubind=0-63 iperf3 -s -1 --port 2502 &;
+# sudo numactl --physcpubind=0-63 iperf3 -s -1 --port 2503 &;
+# sudo numactl --physcpubind=0-63 iperf3 -s -1 --port 2504 &;
+# sudo numactl --physcpubind=0-63 iperf3 -s -1 --port 2505 &;
+# sudo numactl --physcpubind=0-63 iperf3 -s -1 --port 2506 &;
+# sudo numactl --physcpubind=0-63 iperf3 -s -1 --port 2507 &;
+# sudo numactl --physcpubind=0-63 iperf3 -s -1 --port 2508;
+
+iperf_instance_count=8;
+cpu_bind_range="0-63";
+
+for (( i=1; i <= ${iperf_instance_count}; i++ )); do
+	sudo numactl --physcpubind=${cpu_bind_range} iperf3	\
+		--server					\
+		--port 250${i}					\
+		> ~/iperf3-test/result/server-itr-${i}.log &
+done;
 
