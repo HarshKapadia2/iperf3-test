@@ -19,7 +19,7 @@ instance_run_time_sec=60;
 window_size="400K";
 
 for (( i=1; i <= ${iperf_instance_count}; i++ )); do
-	sudo numactl --physcpubind=${cpu_bind_range} iperf3	\
+	numactl --physcpubind=${cpu_bind_range} iperf3	\
 		--client ${server_ip}				\
 		--port 250${i}					\
 		--parallel ${streams_per_instance}		\
