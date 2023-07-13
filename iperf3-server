@@ -15,7 +15,7 @@ iperf_instance_count=8;
 cpu_bind_range="0-63";
 
 for (( i=1; i <= ${iperf_instance_count}; i++ )); do
-	sudo numactl --physcpubind=${cpu_bind_range} iperf3	\
+	numactl --physcpubind=${cpu_bind_range} iperf3	\
 		--server					\
 		--port 250${i}					\
 		> ~/iperf3-test/results/server-itr-${i}.log &
