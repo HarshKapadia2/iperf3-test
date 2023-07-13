@@ -26,6 +26,6 @@ for (( i=1; i <= ${iperf_instance_count}; i++ )); do
 		--time ${instance_run_time_sec}			\
 		--window ${window_size}				\
 		--zerocopy					\
-		> ~/iperf3-test/result/client-itr-${i}.log &
+		> ~/iperf3-test/results/client-itr-${i}.log &
 done;
 
