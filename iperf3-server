@@ -17,6 +17,7 @@ cpu_bind_range="0-63";
 for (( i=1; i <= ${iperf_instance_count}; i++ )); do
 	numactl --physcpubind=${cpu_bind_range} iperf3	\
 		--server					\
+		--one-off					\
 		--port 250${i}					\
 		> ~/iperf3-test/results/server-itr-${i}.log &
 done;
