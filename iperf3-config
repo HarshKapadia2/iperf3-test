@@ -30,6 +30,7 @@ if [[ "${interface_name}" == "" ]]; then
 fi;
 
 sudo ethtool -K ${interface_name} lro on;
+sudo ethtool -K ${interface_name} tso on;
 sudo ethtool -K ${interface_name} hw-tc-offload on;
 sudo ethtool -K ${interface_name} ntuple on;
 sudo ethtool -K ${interface_name} tx-nocache-copy on;
