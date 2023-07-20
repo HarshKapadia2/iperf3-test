@@ -1,52 +1,51 @@
 #! /bin/bash
 
-set -Eeuo pipefail;
+set -Eeuo pipefail
 
-interface_name="";
+interface_name=""
 
 # Handle command-line arguments
 if [[ "$#" -gt 0 ]]; then
 	while [[ "$#" -gt 0 ]]; do
 		case "$1" in
 			"--interface-name")
-				interface_name=$2;
-				shift;
-				shift;
+				interface_name=$2
+				shift
+				shift
 				;;
 			*)
-				echo "";
-				echo "Error: invalid argument $1.";
-				exit 1;
-				echo "";
-				shift;
+				echo ""
+				echo "Error: invalid argument $1."
+				exit 1
+				echo ""
+				shift
 				;;
-		esac;
-	done;
-fi;
+		esac
+	done
+fi
 
 if [[ "${interface_name}" == "" ]]; then
-	echo "Please enter interface name";
-	exit 1;
-fi;
+	echo "Please enter interface name"
+	exit 1
+fi
 
-sudo ethtool -K ${interface_name} lro on;
-sudo ethtool -K ${interface_name} tso on;
-sudo ethtool -K ${interface_name} hw-tc-offload on;
-sudo ethtool -K ${interface_name} ntuple on;
-sudo ethtool -K ${interface_name} tx-nocache-copy on;
-sudo ethtool -G ${interface_name} rx 8192 tx 8192;
+sudo ethtool -K ${interface_name} lro on
+sudo ethtool -K ${interface_name} tso on
+sudo ethtool -K ${interface_name} hw-tc-offload on
+sudo ethtool -K ${interface_name} ntuple on
+sudo ethtool -K ${interface_name} tx-nocache-copy on
+sudo ethtool -G ${interface_name} rx 8192 tx 8192
 sudo ethtool -s ${interface_name} speed 100000 duplex full autoneg off
-sudo ethtool -L ${interface_name} combined 8;
-sudo ip link set dev ${interface_name} mtu 9000 ;
-sudo ip link set dev ${interface_name} txqueuelen 20000;
-sudo sysctl -w net.core.rmem_max=2147483647;
-sudo sysctl -w net.core.wmem_max=2147483647;
-sudo sysctl -w net.core.rmem_default=524288;
-sudo sysctl -w net.core.wmem_default=524288;
-sudo sysctl -w net.core.netdev_max_backlog=25000;
-sudo sysctl -w net.core.busy_poll=50;
-sudo sysctl -w net.core.busy_read=50;
-sudo sysctl -w net.core.netdev_budget=1200;
-sudo sysctl -w net.core.rps_sock_flow_entries=65536;
-sudo echo 16128 | sudo tee /sys/class/net/${interface_name}/queues/rx-*/rps_flow_cnt;
-
+sudo ethtool -L ${interface_name} combined 8
+sudo ip link set dev ${interface_name} mtu 9000
+sudo ip link set dev ${interface_name} txqueuelen 20000
+sudo sysctl -w net.core.rmem_max=2147483647
+sudo sysctl -w net.core.wmem_max=2147483647
+sudo sysctl -w net.core.rmem_default=524288
+sudo sysctl -w net.core.wmem_default=524288
+sudo sysctl -w net.core.netdev_max_backlog=25000
+sudo sysctl -w net.core.busy_poll=50
+sudo sysctl -w net.core.busy_read=50
+sudo sysctl -w net.core.netdev_budget=1200
+sudo sysctl -w net.core.rps_sock_flow_entries=65536
+sudo echo 16128 | sudo tee /sys/class/net/${interface_name}/queues/rx-*/rps_flow_cnt
