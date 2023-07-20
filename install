@@ -1,0 +1,7 @@
+#! /bin/bash
+
+set -Eeuo pipefail
+
+# Install iperf3
+sudo apt-get update
+sudo apt-get install -y iperf3
