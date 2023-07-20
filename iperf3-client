@@ -12,20 +12,25 @@ set -Eeuo pipefail;
 # sudo numactl --physcpubind=0-63 iperf3 -c 192.168.0.2 --port 2508 -P 8 -t 60 --window=400K --len=128K;
 
 iperf_instance_count=8;
-cpu_bind_range="0-63";
+cpu_bind_range="32-39";
 server_ip="192.168.0.2";
-streams_per_instance=8;
+streams_per_instance=1;
 instance_run_time_sec=60;
-window_size="400K";
+window_size="800K";
+mss_bytes=8860;
+interface_name="enp33s0np0";
 
 for (( i=1; i <= ${iperf_instance_count}; i++ )); do
-	numactl --physcpubind=${cpu_bind_range} iperf3	\
+	numactl --physcpubind=${cpu_bind_range} iperf3		\
 		--client ${server_ip}				\
 		--port 250${i}					\
 		--parallel ${streams_per_instance}		\
 		--time ${instance_run_time_sec}			\
 		--window ${window_size}				\
+		--set-mss ${mss_bytes}				\
 		--zerocopy					\
 		> ~/iperf3-test/results/client-itr-${i}.log &
 done;
+
+sudo tcpdump -envA -i ${interface_name} -c 1000 -w ~/iperf3-test/results/client-pkt-dump.pcap --no-promiscuous-mode
 
