@@ -1,0 +1,54 @@
+#! /bin/bash
+
+set -Eeuo pipefail
+
+result_path=""
+
+# Handle command-line arguments
+if [[ "$#" -gt 0 ]]; then
+	while [[ "$#" -gt 0 ]]; do
+		case "$1" in
+			"--result-path")
+				result_path=$2
+				shift
+				shift
+				;;
+			*)
+				echo ""
+				echo "Error: invalid argument $1."
+				exit 1
+				;;
+		esac
+	done
+fi
+
+if [[ "${result_path}" == "" ]]; then
+	echo "Please enter result log file(s) path using the '--result-path' option."
+	exit 1
+fi
+
+# Get iperf3 instance bandwidth from log
+get_instance_bandwidth() {
+	bandwidth_string=$(tail --lines=4 "$1" | head --lines=1)
+	first_column=$(echo "${bandwidth_string}" | awk '{print $1}')
+
+	if [[ "${first_column}" == "[" ]]; then
+		echo "${bandwidth_string}" | awk '{print $7}'
+	else
+		echo "${bandwidth_string}" | awk '{print $6}'
+	fi
+}
+
+# Get all log file names in the 'result_path'
+log_file_paths=$(ls "${result_path}"/*.log) # Error if no log files present
+log_file_path_arr=("${log_file_paths}")
+
+# Calculate total bandwidth
+total_bandwidth=0
+
+for file_path in ${log_file_path_arr[@]}; do
+	instance_bandwidth=$(get_instance_bandwidth "${file_path}")
+	total_bandwidth=$(echo "${total_bandwidth} + ${instance_bandwidth}" | bc)
+done
+
+echo "${total_bandwidth}"
