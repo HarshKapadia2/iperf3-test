@@ -3,12 +3,12 @@
 set -Eeuo pipefail
 
 iperf_instance_count=8
-cpu_bind_range="32-47"
+cpu_num=31 # NPS4 NUMA node 2 CPU range: 32-47
 
 for ((i = 1; i <= ${iperf_instance_count}; i++)); do
-	numactl --physcpubind=${cpu_bind_range} iperf3 \
+	numactl --physcpubind=$((cpu_num + i)) iperf3 \
 		--server \
 		--one-off \
-		--port 250${i} \
-		> ~/iperf3-test/results/server-itr-${i}.log &
+		--port "250${i}" \
+		> "$HOME/iperf3-test/results/server-itr-${i}.log" &
 done
