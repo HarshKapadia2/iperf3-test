@@ -1,0 +1,19 @@
+#!/bin/bash
+
+
+for ((i = 220; i<284; i++))
+do
+	echo "32-39" > /proc/irq/$i/smp_affinity_list
+done
+
+for ((i = 220; i<284; i++))
+do
+	cat /proc/irq/$i/smp_affinity_list
+done
+
+
+
+exit 
+cat /proc/irq/*/*21:00*/smp_affinity_list
+/proc/irq/239/smp_affinity_list
+mlx5_comp0@pci:0000:21:00.0
