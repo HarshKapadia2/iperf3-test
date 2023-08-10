@@ -2,11 +2,13 @@
 
 set -Eeuo pipefail
 
-iperf_instance_count=8
+iperf_instance_count=1
 cpu_num=31 # NPS4 NUMA node 2 CPU range: 32-47
 
 for ((i = 1; i <= ${iperf_instance_count}; i++)); do
-	numactl --physcpubind=$((cpu_num + i)) iperf3 \
+	numactl --physcpubind=32-39 \
+		--membind=2 \
+		iperf3 \
 		--server \
 		--one-off \
 		--port "250${i}" \
