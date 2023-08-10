@@ -2,34 +2,42 @@
 
 set -Eeuo pipefail
 
-iperf_instance_count=8
+iperf_instance_count=1
 cpu_num_1=31 # NPS4 NUMA node 2 CPU range: 32-47
 cpu_num_2=39 # CCD ranges in node = 32-39,40-47
 server_ip="192.168.0.2"
 streams_per_instance=8
 instance_run_time_sec=60
-window_size="800K"
+window_size="1M"
+buffer_length="1M"
 mss_bytes=8860
+
 
 for ((i = 1; i <= iperf_instance_count; i++)); do
 	if [[ $((i % 2)) -ne 0 ]]; then
-		numactl --physcpubind=$((cpu_num_1 + i)) iperf3 \
+		numactl --physcpubind=$((cpu_num_1 + i)) \
+			--membind=2 \
+			iperf3 \
 			--client ${server_ip} \
 			--port "250${i}" \
 			--parallel ${streams_per_instance} \
 			--time ${instance_run_time_sec} \
 			--window ${window_size} \
 			--set-mss ${mss_bytes} \
+			--length ${buffer_length} \
 			--zerocopy \
 			> "$HOME/iperf3-test/results/client-itr-${i}.log" &
 	else
-		numactl --physcpubind=$((cpu_num_2 + i)) iperf3 \
+		numactl --physcpubind=$((cpu_num_2 + i)) \
+			--membind=2 \
+			iperf3 \
 			--client ${server_ip} \
 			--port "250${i}" \
 			--parallel ${streams_per_instance} \
 			--time ${instance_run_time_sec} \
 			--window ${window_size} \
 			--set-mss ${mss_bytes} \
+			--length ${buffer_length} \
 			--zerocopy \
 			> "$HOME/iperf3-test/results/client-itr-${i}.log" &
 	fi
